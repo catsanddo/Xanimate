@@ -31,9 +31,6 @@ static void ParseConfig(int *fps, int *frames)
         fclose(file);
         
         chdir(frame_path);
-        file = popen("ls | wc -l", "r");
-        fscanf(file, "%d", frames);
-        fclose(file);
     } else {
         exit(1);
     }
@@ -81,17 +78,58 @@ void Daemonize(void)
     }
 }
 
-void LoadConfig(int *fps, int *frames)
+int CountFrames(const char *path)
 {
-    if (!new_fps && !new_frames) {
-        ParseConfig(&new_fps, &new_frames);
+    FILE *file;
+    int frames;
+
+    if (chdir(path) < 0) {
+        return -1;
     }
-    *fps = new_fps;
-    *frames = new_frames;
+
+    file = popen("ls | wc -l", "r");
+
+    if (!file) {
+        return -1;
+    }
+
+    fscanf(file, "%d", frames);
+    fclose(file);
+
+    return frames;
 }
 
 void tick(int fps)
 {
     // milliseconds to sleep per frame
     msleep(1.0 / fps * 1000);
+}
+
+int atoi(const char *num)
+{
+    int return_num = 0;
+    int neg = 1;
+    char ch;
+    int i = 0;
+
+    while ((ch = num[i++]) != '\0') {
+        if (ch == '-') {
+            neg = -1;
+        } else if (ch >= '0' && ch <= '9') {
+            return_num *= 10;
+            return_num += ch - '0';
+        }
+    }
+
+    return return_num * neg;
+}
+
+int clampi(int val, int min, int max)
+{
+    if (val < min) {
+        return min;
+    } else if (val > max) {
+        return max;
+    }
+    return val;
 }

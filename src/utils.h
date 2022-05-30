@@ -2,7 +2,9 @@
 #define UTILS_H
 
 void Daemonize(void);
-void LoadConfig(int *fps, int *frames);
+int CountFrames(const char *path);
 void tick(int fps);          // Sleeps for a delay based on a target framerate
+int atoi(const char *num);
+int clampi(int val, int min, int max);
 
 #endif
