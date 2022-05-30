@@ -70,9 +70,12 @@ int main(int argc, char **argv)
         pid_t pid = fork();
         if (pid == 0) {
             execlp("feh", "feh", "--no-fehbg", "--bg-max", frame, (char *) 0);
-            // Only runs if execlp has failed
+            /* Only runs if execlp has failed */
             exit(EXIT_FAILURE);
         } else {
+            /* Necessary to release child resources
+             * if this call is skipped
+             * this program turns into a fork bomb */
             waitpid(pid, 0, 0);
         }
 
